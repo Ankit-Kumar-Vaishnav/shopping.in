@@ -1,5 +1,5 @@
 """
-WSGI config for shoopingsite project.
+WSGI config for shoppingsite project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'shoopingsite.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'shoppingsite.settings')
 
 application = get_wsgi_application()
