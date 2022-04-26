@@ -1,0 +1,115 @@
+{% extends 'shop/basic.html' %}
+
+{% comment %} Adding Title {% endcomment %}
+{% block title %} Welcome to Shopping.in {% endblock title %}
+
+{% comment %} Adding Css {% endcomment %}
+{% block css %}.col-md-3 {
+    display: inline-block;
+    margin-left: 0px;
+  }
+  .card{
+    padding : 10px
+  }
+
+  .col-md-3 img {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+  }
+
+  .carousel-indicators .active {
+    background-color: violet;
+  }
+  .carousel-control-prev{
+    left: -200px;
+}
+.carousel-control-next {
+  right: -200px;
+}
+
+  body .carousel-control-prev-icon {
+    background-color: blue;
+  }
+  body .carousel-control-next-icon {
+  background-color: blue;
+  }{% endblock css %}
+
+{% comment %} Adding Body {% endcomment %}
+{% block body %}
+{% load static%}
+<div class="container my-3">
+  {% for product, range, nSlides,category in allProds %}
+    <h2>{{category}}</h2>
+    <div id="carouselExampleIndicators{{ forloop.counter}}" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators{{ forloop.counter}}" data-bs-slide-to="0" class="active"
+        aria-current="true" aria-label="Slide 0"></button>
+        {% for i in nSlides %}
+        <button type="button" data-bs-target="#carouselExampleIndicators{{ forloop.perentloop.counter}}" data-bs-slide-to="{{i}}"
+        aria-label="Slide {{i}}"></button>
+        {% endfor %}
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="row">
+            {% for i in product|slice:"0:" %}
+            <div class="col-xs-3 col-sm-3 col-md-3">
+              <div class="card" style="width: 18rem;">
+                <img src = '/media/{{i.image}}' class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">{{i.product_name}}</h5>
+                  <p class="card-text">{{i.desc}}</p>
+                  <button href="#" id="pr{{i.id}}" class="btn btn-primary cart">Add to Cart</button>
+                </div>
+              </div>
+            </div>
+            {% if forloop.counter|divisibleby:4 and forloop.counter > 0 and not forloop.last %}
+        </div></div> <div class="carousel-item">
+            <div class="row">
+            {% endif %}
+            {% endfor %}
+        </div></div></div>
+      
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators{{ forloop.counter}}"
+      data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators{{ forloop.counter}}"
+        data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+    <hr> 
+    {% endfor %}
+</div>
+{% endblock body %}
+
+{% block js %}
+<script>
+if(localStorage.getItem('cart')==null){
+  cart = {}
+}
+else{
+  cart = JSON.parse(localStorage.getItem('cart'));
+  document.getElementById('cart').innerHTML = Object.keys(cart).length;
+}
+let elmes = document.querySelectorAll('.cart');
+elmes.forEach(element =>{
+  element.addEventListener('click',function(){
+    idstr = element.id
+    if(cart[idstr]!=undefined){
+      cart[idstr] = cart[idstr]+1
+    }
+    else{
+      cart[idstr] = 1
+    }
+    localStorage.setItem('cart',JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = Object.keys(cart).length;
+  })
+})
+
+</script>
+{% endblock js %}
