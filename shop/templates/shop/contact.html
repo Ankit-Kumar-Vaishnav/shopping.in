@@ -1,0 +1,28 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %}Contact Us | Shopping.in{% endblock %}
+{% block body %}
+<div class="container my-4">
+    <h3>Contact Us Regarding Any Query</h3>
+    <form action="/shop/contact/" method="post" > {% csrf_token %}
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Name</label>
+            <input type="text" class="form-control" name="name" id="exampleFormControlInput1" placeholder="Enter Your Name">
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput2" class="form-label">Email address</label>
+            <input type="email" class="form-control" name="email" id="exampleFormControlInput2" placeholder="name@example.com">
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput3" class="form-label">Mobile No.</label>
+            <input type="tel" class="form-control"  name="phone" id="exampleFormControlInput3"
+                placeholder="Enter your Mobile No. Here">
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea2" class="form-label">Your Query</label>
+            <textarea class="form-control" id="exampleFormControlTextarea2" name="query" rows="5"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}

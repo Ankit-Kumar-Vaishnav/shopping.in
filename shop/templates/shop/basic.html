@@ -11,6 +11,7 @@
     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
   <title>{% block title %}{% endblock %}</title>
+  <link rel="shortcut icon" href="/media/fabicon.png" type="image/x-icon">
   <style>
     {% block css %}{% endblock %}
   </style>
@@ -19,7 +20,7 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Shopping.in</a>
+      <a class="navbar-brand" href="/shop">Shopping.in</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -27,19 +28,25 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
+            <a class="nav-link active" aria-current="page" href="/shop">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
+            <a class="nav-link" href="/shop/tracker">Tracker</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Cart(<span id="cart">0</span>)</a>
+            <a class="nav-link" href="/shop/about">About Us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/shop/contact">Cantact Us</a>
           </li>
         </ul>
         <form class="d-flex">
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
+        <button type="button" class="btn btn-secondary mx-2" id= 'popcart' data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html = "true" data-bs-content ="hello" >
+          Cart(<span id="cart">0</span>)
+        </button>
       </div>
     </div>
   </nav>
@@ -57,7 +64,28 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
     -->
-    {% block js %}{% endblock js %}
+    <script>
+      
+      //Find out the cart items form local Storage
+      if(localStorage.getItem('cart')==null){
+        cart = {}
+      }
+      else{
+        cart = JSON.parse(localStorage.getItem('cart'));
+      }
+
+      // This function is use to update the quintity in cart
+      updateCart(cart);
+      function updateCart(cart){
+        let keys = Object.keys(cart)
+          let q = 0
+          for(let i = 0 ; keys.length>i; i++){
+            q = q + cart[keys[i]][0]
+          }
+          document.getElementById('cart').innerHTML = q ;
+        }
+      {% block js %}{% endblock js %}
+    </script>
 </body>
 
 </html>

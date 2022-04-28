@@ -9,7 +9,8 @@
     margin-left: 0px;
   }
   .card{
-    padding : 10px
+    padding : 10px;
+    height: 500px;
   }
 
   .col-md-3 img {
@@ -58,9 +59,12 @@
               <div class="card" style="width: 18rem;">
                 <img src = '/media/{{i.image}}' class="card-img-top" alt="...">
                 <div class="card-body">
-                  <h5 class="card-title">{{i.product_name}}</h5>
-                  <p class="card-text">{{i.desc}}</p>
-                  <button href="#" id="pr{{i.id}}" class="btn btn-primary cart">Add to Cart</button>
+                  <h5 class="card-title" id = 'namepr{{i.id}}'>{{i.product_name}}</h5>
+                  <p class="card-text">{{i.desc | slice:"0:75"}}...</p>
+                  <span id = "divpr{{i.id}}">
+                  <button href="#" id="pr{{i.id}}" onclick= 'addToCart(this.id)' class="btn btn-primary cart">Add to Cart</button>
+                  </span>
+                  <a href="/shop/productview/{{i.id}}" ><button id="fv{{i.id}}" class="btn btn-primary">Full View</button></a>
                 </div>
               </div>
             </div>
@@ -88,28 +92,98 @@
 {% endblock body %}
 
 {% block js %}
-<script>
-if(localStorage.getItem('cart')==null){
-  cart = {}
-}
-else{
-  cart = JSON.parse(localStorage.getItem('cart'));
-  document.getElementById('cart').innerHTML = Object.keys(cart).length;
-}
-let elmes = document.querySelectorAll('.cart');
-elmes.forEach(element =>{
-  element.addEventListener('click',function(){
-    idstr = element.id
-    if(cart[idstr]!=undefined){
-      cart[idstr] = cart[idstr]+1
-    }
-    else{
-      cart[idstr] = 1
-    }
-    localStorage.setItem('cart',JSON.stringify(cart));
-    document.getElementById('cart').innerHTML = Object.keys(cart).length;
-  })
-})
+// If the add to cart button is clicked, add/increment the item
+      function addToCart(idstr){
+        if(cart[idstr]!=undefined){
+          qty = cart[idstr][0]+1
+          name = document.getElementById('name'+idstr).innerText;
+          cart[idstr] = [qty,name]
+        }
+        else{
+          qty = 1
+          name = document.getElementById('name'+idstr).innerText;
+          cart[idstr] = [qty,name]
+        }
+        localStorage.setItem('cart',JSON.stringify(cart));
+        let keys = Object.keys(cart)
+        let q = 0
+        for(let i = 0 ; keys.length>i; i++){
+          q = q + cart[keys[i]][0]
+        }
+        document.getElementById('cart').innerHTML = q ;
+        showCart(cart);
+        updateCart(cart);
+        updatePopover(cart);
+      }
 
-</script>
-{% endblock js %}
+      showCart(cart);
+      // This function show the values of existing item which is already add in cart;
+      function showCart(cart){
+        for ( let item in cart){
+          let html =  "<button id = 'minus" + item + "' onclick = 'minus(this.id)' class = 'btn btn-primary minus'>-</button> <span id= 'val"+ item + "'>" + cart[item][0] + "</span><button id = 'plus"+ item + "' onclick ='plus(this.id)' class = 'btn btn-primary plus mx-1'>+</button>"
+          document.getElementById('div'+item).innerHTML = html
+        }
+      }
+
+      // This function for plus button
+      function plus(id){
+        id = id.slice(6);
+        cart['pr'+id][0] = cart['pr'+id][0]+1;
+        document.getElementById('valpr'+id).innerHTML = cart['pr'+id][0]
+        localStorage.setItem('cart',JSON.stringify(cart));
+        updateCart(cart);
+        updatePopover(cart);
+      }
+      
+      // This function for plus button
+      function minus(id){
+        id = id.slice(7);
+          if( cart['pr'+id][0]==1){
+            document.getElementById('divpr'+id).innerHTML = "<button href='#' id='pr" + id + "' onclick= 'addToCart(this.id)' class='btn btn-primary cart'>Add to Cart</button>"
+            delete cart['pr'+id];
+            localStorage.setItem('cart',JSON.stringify(cart));
+          }
+          else{
+            cart['pr'+id][0] = cart['pr'+id][0]-1;
+            document.getElementById('valpr'+id).innerHTML = cart['pr'+id][0]
+            localStorage.setItem('cart',JSON.stringify(cart));
+          }
+          updateCart(cart);
+          updatePopover(cart);
+      }
+
+      // Add popover to Cart
+      let popcart = document.getElementById('popcart')
+      popcart.setAttribute('data-bs-content',"welcome to Cart");
+      let popover = new bootstrap.Popover(popcart)
+      popover.show();
+
+      updatePopover(cart);
+
+      //This function update the items in popover
+      function updatePopover(cart){
+        let popstr = '<h5>Cart for your items in my shopping cart </h5>'
+        let i = 1;
+        for (item in cart){
+          popstr = popstr + "<b>"+i+". </b>"
+          popstr = popstr + document.getElementById('name'+item).innerHTML.slice(0, 20) + "... Qty:" + cart[item][0] + "<hr>";
+          i= i+1;
+        }
+        popstr = popstr + "<a onclick='clearCart()' class = 'btn btn-primary' type = 'button' id = 'clearcart'>ClearCart</a><a href='/shop/checkout' class = 'btn btn-primary mx-2'  type = 'button' id = 'checkout'>Checkout</a>";
+        let popBodyElem = document.getElementsByClassName('popover-body')[0]
+        popBodyElem.innerHTML = popstr;
+      }
+
+      //Clearcart function
+      let clearcartelem = document.getElementById('clearcart');
+      clearcartelem.addEventListener('click',clearCart)
+      function clearCart(){
+        cart = JSON.parse(localStorage.getItem('cart'));
+        for (let item in cart){
+          document.getElementById('div'+item).innerHTML = "<button href='#' id='" + item + "' onclick= 'addToCart(this.id)' class='btn btn-primary cart'>Add to Cart</button>"
+        }
+        localStorage.clear();
+        cart = {}
+        updatePopover(cart);
+      }
+      {% endblock js %}
